@@ -35,11 +35,3 @@ class SmartCache {
 
   ptr_t get(ID id) { return getByID_implementation(id); }
 };
-
-
-
-
-
-
-
-
