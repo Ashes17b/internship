@@ -1,0 +1,78 @@
+#include <iostream>
+#include <iterator>
+
+template <class T, class Category, class Distance = ptrdiff_t,
+          class Pointer = T *, class Reference = T &>
+struct Custom_Iterator {
+    typedef T value_type;
+    typedef Category iterator_category;
+    typedef Distance difference_type;
+    typedef Pointer pointer;
+    typedef Reference reference;
+};
+
+template <typename Predicate, typename Iterator> // filter, base
+class Filter_Iterator : public Custom_Iterator<std::forward_iterator_tag, Predicate> {
+  private:
+    using ItemT = decltype(*(std::declval<Iterator>()));
+    using IteratorT = Filter_Iterator<Predicate, Iterator>;
+
+    Predicate m_pred;
+    Iterator m_iter;
+    Iterator m_end;
+
+    void forward() {
+        do {
+            ++m_iter;
+        } while (m_iter != m_end && !m_pred(*m_iter));
+    }
+  public:
+    Filter_Iterator() 
+            : m_iter(nullptr)
+            , m_end(nullptr)
+            , m_pred([](auto x) { return x; }) {}
+
+    Filter_Iterator(Predicate predicate, Iterator iterator, Iterator containter_end)
+            : m_iter(iterator)
+            , m_end(containter_end)
+            , m_pred(predicate)
+    {   
+        if (m_iter != m_end && !m_pred(*m_iter)) 
+            forward();
+    }
+
+    Filter_Iterator(const IteratorT &iterator) 
+            : m_iter(iterator.m_iter)
+            , m_end(iterator.m_end)
+            , m_pred(iterator.m_pred) {}
+
+    ItemT operator*() const { return *m_iter; }
+
+    ItemT operator->() const { return m_iter; }
+
+    IteratorT &operator++() {
+        forward();
+        return *this;
+    }
+
+    IteratorT operator++(int) {
+        IteratorT temp_iterator(*this);
+        forward();
+        return temp_iterator;
+    }
+
+    IteratorT &operator=(const IteratorT &sm_iterator) {
+        m_iter = sm_iterator.m_iter;
+        m_end = sm_iterator.m_end;
+        m_pred = sm_iterator.m_pred;
+        return *this;
+    }
+
+    friend bool operator==(const IteratorT &first, const IteratorT &second) {
+        return first.m_iter == second.m_iter;
+    }
+
+    friend bool operator!=(const IteratorT &first, const IteratorT &second) {
+        return first.m_iter != second.m_iter;
+    }
+};
