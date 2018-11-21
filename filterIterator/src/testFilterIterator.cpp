@@ -10,16 +10,31 @@ BOOST_AUTO_TEST_SUITE(test_suite1)
 
 bool is_positive_number(int x) { return x > 0; }
 
-BOOST_AUTO_TEST_CASE(test_case1) {
+BOOST_AUTO_TEST_CASE(normal_test) {
     using vec_t = std::vector<int>;
+
     vec_t v = {-4, 1, -1, -6, 7, -3, 9, -5};
-
-    Filter_Iterator<bool (*)(int), decltype(v.begin())> filter_iter_first(is_positive_number, v.begin(), std::prev(v.end()));
-    Filter_Iterator<bool (*)(int), decltype(v.begin())> filter_iter_last(is_positive_number, std::prev(v.end()), std::prev(v.end()));
-
     vec_t expected = {1, 7, 9};
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(expected.begin(), expected.end(),
+    using filter_iterator_t = Filter_Iterator<bool (*)(int), decltype(v.cbegin())>;
+    filter_iterator_t filter_iter_first(is_positive_number, v.cbegin(), std::prev(v.cend()));
+    filter_iterator_t filter_iter_last(is_positive_number, std::prev(v.cend()), std::prev(v.cend()));
+ 
+    BOOST_CHECK_EQUAL_COLLECTIONS(expected.cbegin(), expected.cend(),
+                                  filter_iter_first, filter_iter_last);
+}
+
+BOOST_AUTO_TEST_CASE(test_on_all_negetives_numbers) {
+    using vec_t = std::vector<int>;
+
+    vec_t v = {-3, -4, -7};
+    vec_t expected = {};
+
+    using filter_iterator_t = Filter_Iterator<bool (*)(int), decltype(v.cbegin())>;
+    filter_iterator_t filter_iter_first(is_positive_number, v.cbegin(), std::prev(v.cend()));
+    filter_iterator_t filter_iter_last(is_positive_number, std::prev(v.cend()), std::prev(v.cend()));
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(expected.cbegin(), expected.cend(),
                                   filter_iter_first, filter_iter_last);
 }
 
