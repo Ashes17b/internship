@@ -4,14 +4,14 @@
 template <class T, class Category, class Distance = ptrdiff_t,
           class Pointer = T *, class Reference = T &>
 struct Custom_Iterator {
-    typedef T value_type;
-    typedef Category iterator_category;
-    typedef Distance difference_type;
-    typedef Pointer pointer;
-    typedef Reference reference;
+    using value_type = T;
+    using iterator_category = Category;
+    using difference_type = Distance;
+    using pointer = Pointer;
+    using reference = Reference;
 };
 
-template <typename Predicate, typename Iterator> // filter, base
+template <typename Predicate, typename Iterator> 
 class Filter_Iterator : public Custom_Iterator<std::forward_iterator_tag, Predicate> {
   private:
     using ItemT = decltype(*(std::declval<Iterator>()));
