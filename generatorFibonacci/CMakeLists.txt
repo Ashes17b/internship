@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(generatorFibonacci)
+project(TestGeneratorFibonacci)
 
 FIND_PACKAGE( Boost 1.67 COMPONENTS unit_test_framework REQUIRED )
 INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
@@ -12,7 +12,7 @@ set(SRC_PATH src)
 set (CMAKE_CXX_STANDARD 17)
 
 set(${PROJECT_NAME}_SRC
-   ${SRC_PATH}/generatorFibonacci.cpp
+   ${SRC_PATH}/testGeneratorFibonacci.cpp
 )
 
 #########################################################
