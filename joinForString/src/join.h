@@ -1,11 +1,19 @@
 #include <sstream>
 
-template <typename SequenceT, typename SeparatorT>
-std::string join(const SequenceT &Sequence, const SeparatorT &Separator) {
+template <typename IteratorBeginT, typename IteratorEndT, typename SeparatorT>
+std::string join(
+        IteratorBeginT &IteratorBegin,
+        IteratorEndT &IteratorEnd, 
+        SeparatorT &Separator) 
+{
     std::stringstream ss;
-    auto it = Sequence.begin();
-    ss << *it++;
-    for (; it != Sequence.cend(); ++it)
-        ss << Separator << *it;
+
+    if (IteratorBegin == IteratorEnd) 
+        return ss.str();
+
+    ss << *IteratorBegin++;
+    for (; IteratorBegin != IteratorEnd; ++IteratorBegin)
+        ss << Separator << *IteratorBegin;
+
     return ss.str();
 }
