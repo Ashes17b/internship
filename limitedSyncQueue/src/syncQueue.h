@@ -23,9 +23,9 @@ class LimitedBuffer
     {
         std::unique_lock<std::mutex> lock(mx_);
 
-        cv_.wait(lock, [this](){ return queue_.size() > 0;});
+        cv_.wait(lock, [this](){ return queue_.size() > 0; });
 
-        auto val = std::move(queue_.front());
+        auto val = queue_.front();
         queue_.pop();
 
         return val;
@@ -33,12 +33,13 @@ class LimitedBuffer
 
     void push(const T &item)
     {   
-        std::unique_lock<std::mutex> lock(mx_);
-        cv_.wait(lock, [this](){ return queue_.size() < size_; });
-        
-        queue_.push(item);
+        {
+            std::unique_lock<std::mutex> lock(mx_);
+            cv_.wait(lock, [this](){ return queue_.size() < size_; });
 
-        lock.unlock();
+            queue_.push(item);
+        }
+
         cv_.notify_all();
     }
 };
