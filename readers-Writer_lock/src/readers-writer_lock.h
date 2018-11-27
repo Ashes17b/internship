@@ -6,64 +6,60 @@ class Readers_Writer_lock
  private:
     std::mutex mx_;
 
-    std::condition_variable r_cv_;
-    std::condition_variable w_cv_;
+    std::condition_variable read_cv_;
+    std::condition_variable write_cv_;
 
-    unsigned int r_count_;
-    unsigned int w_count_;
+    unsigned int n_reading_;
+    unsigned int n_waiting_for_write_;
 
-    bool is_active_w_;
+    bool is_writing;
 
  public:
-    Readers_Writer_lock() : r_count_(0), w_count_(0), is_active_w_(false) {}
+    Readers_Writer_lock() : n_reading_(0), n_waiting_for_write_(0), is_writing(false) {}
 
-    void StartRead()
+    void EnterRead()
     {
         std::cout << __FUNCTION__ << std::endl;
 
-        std::unique_lock<std::mutex> u_lock(mx_);
+        std::unique_lock<std::mutex> lock(mx_);
 
-        r_cv_.wait(u_lock, [this]() { return w_count_ == 0 && !is_active_w_; });
+        read_cv_.wait(lock, [this]() { return n_waiting_for_write_ == 0 && !is_writing; });
 
-        ++r_count_;
+        ++n_reading_;
     }
 
-    void StopRead()
+    void LeaveRead()
     {
         std::cout << __FUNCTION__ << std::endl;
 
         {
-            std::lock_guard<std::mutex> lock_guard(mx_);
-            --r_count_;
+            std::lock_guard<std::mutex> lock(mx_);
+            --n_reading_;
         }
 
-        w_cv_.notify_one();
+        write_cv_.notify_one();
     }
 
-    void StartWrite()
+    void EnterWrite()
     {
         std::cout << __FUNCTION__ << std::endl;
 
-        std::unique_lock<std::mutex> unique_lock(mx_);
-        ++w_count_;
+        std::unique_lock<std::mutex> lock(mx_);
+        ++n_waiting_for_write_;
 
-        w_cv_.wait(unique_lock, [this]() { return r_count_ == 0 && !is_active_w_; });
+        write_cv_.wait(lock, [this]() { return n_reading_ == 0 && !is_writing; });
 
-        unique_lock.unlock();
-
-        mx_.lock();
-
-        is_active_w_ = true;
-        --w_count_;
+        is_writing = true;
+        --n_waiting_for_write_;
     }
 
-    void StopWrite()
+    void LeaveWrite()
     {
         std::cout << __FUNCTION__ << std::endl;
 
-        is_active_w_ = false;
+        is_writing = false;
         mx_.unlock();
 
-        w_count_ != 0 ? w_cv_.notify_one() : r_cv_.notify_all();
+        n_waiting_for_write_ != 0 ? write_cv_.notify_one() : read_cv_.notify_all();
     }
 };

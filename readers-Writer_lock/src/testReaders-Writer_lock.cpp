@@ -1,25 +1,18 @@
-#include "readers-writer_lock.h"
+#include "wrapper_RWL.h"
 
 #include <thread>
 
-Readers_Writer_lock r_w_l;
+void read()
+{
+    Wrapper_RWL_for_Read read_;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+}
 
 void write()
 {
-    r_w_l.StartWrite();
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    r_w_l.StopWrite();
-}
-
-void read()
-{
-    r_w_l.StartRead();
+    Wrapper_RWL_for_Write write_;
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
-
-    r_w_l.StopRead();
 }
 
 int main()
