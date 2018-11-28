@@ -2,21 +2,25 @@
 
 #include <thread>
 
+Readers_Writer_lock rwl;
+
 void read()
 {
-    Wrapper_RWL_for_Read read_;
+    Wrapper_RWL_for_Read wrapper_RWL_for_Read(rwl);
+
     std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 void write()
 {
-    Wrapper_RWL_for_Write write_;
+    Wrapper_RWL_for_Write wrapper_RWL_for_Write(rwl);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 int main()
 {
+    std::mutex mx_;
     std::thread r1(read);
     std::cout << std::endl;
 
