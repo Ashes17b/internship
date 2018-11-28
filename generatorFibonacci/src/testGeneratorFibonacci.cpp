@@ -15,8 +15,8 @@ BOOST_AUTO_TEST_CASE(test_generatorFibonacci1) {
     vec_t v = {0, 1};
     vec_t expected = {0, 1, 1, 2, 3, 5, 8, 13};
 
-    for (unsigned int i = 0; i < 6; ++i, it.increment()) 
-        v.push_back(it.dereference());
+    for (unsigned int i = 0; i < 6; ++i, ++it) 
+        v.push_back(*it);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(expected.cbegin(), expected.cend(),
                                   v.cbegin(), v.cend());

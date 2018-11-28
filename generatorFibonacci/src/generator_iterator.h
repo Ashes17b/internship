@@ -7,12 +7,21 @@ namespace iterator {
         generator_iterator() {}
         generator_iterator(Generator *g) : m_g(g), m_value((*m_g)()) {}
 
-        void increment() {
+        generator_iterator
+        & operator++() {
             m_value = (*m_g)();
+            return *this;
         }
 
-        const typename Generator::result_type &
-        dereference() const {
+        generator_iterator
+        operator++(int) {
+            generator_iterator result(*this);
+            ++(*this);
+            return result;
+        }
+
+        typename Generator::result_type 
+        operator *() const {
             return m_value;
         }
 
