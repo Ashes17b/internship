@@ -7,16 +7,16 @@ class Transform_Iterator {
     using ItemT = decltype(*(std::declval<Iterator>()));
     using IteratorT = Transform_Iterator<Predicate, Iterator>;
 
-    Predicate m_pred;
-    Iterator m_iter;
-    Iterator m_end;
+    Predicate pred_;
+    Iterator iter_;
+    Iterator end_;
   public:
     ItemT operator*() const {
-        return m_pred(*m_iter);
+        return pred_(*iter_);
     }
 
     IteratorT &operator++() {
-        ++m_iter;
+        ++iter_;
         return *this;
     }
 
@@ -27,23 +27,23 @@ class Transform_Iterator {
     }
 
     IteratorT &operator=(const IteratorT &sm_iterator) {
-        m_iter = sm_iterator.m_iter;
-        m_end = sm_iterator.m_end;
-        m_pred = sm_iterator.m_pred;
+        iter_ = sm_iterator.iter_;
+        end_ = sm_iterator.end_;
+        pred_ = sm_iterator.pred_;
         return *this;
     }
 
     friend bool operator==(const IteratorT &first, const IteratorT &second) {
-        return first.m_iter == second.m_iter;
+        return first.iter_ == second.iter_;
     }
 
     friend bool operator!=(const IteratorT &first, const IteratorT &second) {
-        return first.m_iter != second.m_iter;
+        return first.iter_ != second.iter_;
     }
 
     Transform_Iterator()
-        : m_iter(nullptr), m_end(nullptr), m_pred([](auto x) { return false; }) {}
+        : iter_(nullptr), end_(nullptr), pred_([](auto x) { return false; }) {}
 
     Transform_Iterator(Predicate predicate, Iterator iterator, Iterator containter_end)
-        : m_iter(iterator), m_end(containter_end), m_pred(predicate) {}
+        : iter_(iterator), end_(containter_end), pred_(predicate) {}
 };
