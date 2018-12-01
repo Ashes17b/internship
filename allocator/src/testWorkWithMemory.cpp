@@ -2,18 +2,19 @@
 
 int main()
 {
-    B b;
-
-    b.stackMemory();
+    stackMemory();
     cout << endl;
 
-    b.dynamicMemory();
+    dynamicMemory();
     cout << endl;
 
-    b.placementNew();
+    placementNew();
     cout << endl;
 
-    b.allocatorMethods();
+    allocatorMethods();
+    cout << endl;
+
+    myAllocatorMethodsWithCustomMemoryManager();
     cout << endl;
 
     return 0;
