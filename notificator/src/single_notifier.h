@@ -21,6 +21,8 @@ class SingleMsgNotifier : public BaseNotifier<Message, Callback>
         if (!msg_queue_.empty()) 
             msg_queue_.pop();
 
+        assert(!msg_queue_.empty());
+        
         msg_queue_.push(msg);
         cv_.notify_all();
     }
