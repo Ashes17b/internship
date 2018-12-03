@@ -1,10 +1,11 @@
 #include <iostream>
 #include <iterator>
+#include <boost/type_index.hpp>
 
 template <typename Predicate, typename Iterator> 
 class Transform_Iterator {
   private:  
-    using ItemT = decltype(*(std::declval<Iterator>()));
+    using ItemT = typename std::remove_reference<decltype(*(std::declval<Iterator>()))>::type;
     using IteratorT = Transform_Iterator<Predicate, Iterator>;
 
     Predicate pred_;
@@ -12,6 +13,12 @@ class Transform_Iterator {
     Iterator end_;
   public:
     ItemT operator*() const {
+        // using boost::typeindex::type_id_with_cvr;
+        // std::cout << type_id_with_cvr<ItemT>().pretty_name() << std::endl;
+
+        // auto x = pred_(*iter_);
+        // std::cout << type_id_with_cvr<decltype(x)>().pretty_name() << std::endl;
+        // std::cout << std::is_same<ItemT, int>::value << std::endl;
         return pred_(*iter_);
     }
 
