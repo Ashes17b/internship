@@ -92,8 +92,8 @@ void myAllocatorMethodsWithCustomMemoryManager()
 {
     cout << __func__ << endl;
 
-    auto memory = std::make_shared<MemoryManager>();
-    MyAllocator<A> myAllocator(memory);
+    MemoryManager buffer(100);
+    MyAllocator<A> myAllocator(buffer);
 
     std::vector<A, MyAllocator<A> > v(myAllocator);
 

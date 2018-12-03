@@ -4,29 +4,26 @@ template <typename T>
 struct MyAllocator
 {
 private:
-    std::shared_ptr<MemoryManager> memory_manager_;
+    MemoryManager &memory_manager_; 
 public:
     using value_type = T;
 
-    MyAllocator(std::shared_ptr<MemoryManager> memory_manager) :
+    MyAllocator(MemoryManager &memory_manager) :
         memory_manager_(memory_manager)
     {}
 
     T *allocate( std::size_t n )
     {
-        auto p = memory_manager_->allocateBlock(n * sizeof(T));
-        if (p != nullptr)
-        {
-            memory_manager_->fillMemory(p, n * sizeof(T));
+        auto p = memory_manager_.allocateBlock(n * sizeof(T));
 
-            return static_cast<T *>(p);
-        }
-        throw std::bad_alloc();
+        if (p == nullptr) throw std::bad_alloc();
+
+        return static_cast<T *>(p);
     }
 
     void deallocate( T *p, std::size_t n )
     {
-        memory_manager_->freeMemory(p, n * sizeof(T));
+        memory_manager_.freeMemory(p, n * sizeof(T));
     }
 
     template <typename... Args>
